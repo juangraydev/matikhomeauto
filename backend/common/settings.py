@@ -25,7 +25,12 @@ SECRET_KEY = '-8p5r9=ny#by!_+b=6i*#gq08b-!^*y$%9%6wy3(kjucmb5ar)'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+
+
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_HEADERS = ['sm-attr-query', 'content-type', 'Authorization']
+
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -37,11 +42,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'rest_framework',
-    'user'
+    'user',
+    'homes',
+    'homeuseraccess',
+    'devices'
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -77,9 +87,17 @@ WSGI_APPLICATION = 'common.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'matik_db',
+        'USER': 'root',
+        'PASSWORD': '',  # TODO: this should be retrieved
+        # from environment variable during production
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
+        'OPTIONS': {
+            'sql_mode': 'traditional'
+        }
+    },
 }
 
 

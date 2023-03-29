@@ -3,6 +3,6 @@ from user import views
 
 
 urlpatterns = [
-    path('login/', views.UserLogin.as_view()),
-    path('register/', views.UserRegister.as_view())
+    ## Get for login, Post for register.
+    path('auth/', views.UserAuth.as_view())
 ]
