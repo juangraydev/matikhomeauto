@@ -8,6 +8,7 @@ from user.models import *
 from user.serializers import *
 import json
 from django.conf import settings
+from core.util.custom_exceptions import *
 
 
 from core.util import common
@@ -25,18 +26,32 @@ class UserManagement(Repository):
                         serializer=UserSerializer)
         super().__init__(module=module)
 
+    def find_by_username(self, username):
+        try:
+            criteria = QueryFilter(username=username)
+            response = super().find_by_criteria(criteria)
+            resp_data = common.get_value(idf.SERIALIZED, response)[0]
+        except Exception as error:
+            print("[Error] Username not Found", error)
+            raise HTTP401Error
+
+        return resp_data
+
     def login(self, request):
-        """
-        Handles the saving of user and generating of token
-        """
-        data = request.data
+        resp_data={}
+        token_auth = TokenAuthentication()
+        try:
+            user = self.find_by_username(request[idf.USERNAME])
+            decrypted_pass = token_auth.decrypt_pass( str.encode(user[idf.OBJ_PASSWORD]) )
+            if(not decrypted_pass[idf.OBJ_PASSWORD] == request[idf.OBJ_PASSWORD]):
+                raise HTTP401Error
+            resp_data[idf.TOKEN] = token_auth.encode_token(user)
+        except Exception as error:
+            print("[Error]", error)
 
-        return data
-
-#AttributeError: 'dict' object has no attribute 
+        return resp_data
 
     def register(self, request):
-        response={}
         resp_data={}
         data_obj = {
             idf.OBJ_ID: "",
@@ -44,20 +59,16 @@ class UserManagement(Repository):
             idf.USERNAME: request[idf.USERNAME],
             idf.ROLE: 0,
         }
-
+        token_auth = TokenAuthentication()
         try:
-            encrypted_pass = TokenAuthentication.encrypt_pass(request[idf.OBJ_PASSWORD])
+            encrypted_pass = token_auth.encrypt_pass(request[idf.OBJ_PASSWORD])
             data_obj[idf.OBJ_PASSWORD] = encrypted_pass.decode('UTF-8')
             super().save(data_obj)
-            criteria = QueryFilter(username=request[idf.USERNAME])
-            response = super().find_by_criteria(criteria)
-            resp_data = common.get_value(idf.SERIALIZED, response)[0]
+            resp_data = self.login(request=request)
             
-        except NameError:
-            print("error db", NameError)
         except Exception as error:
-            print("error db", error)
+            print("[Error]", error)
+            raise HTTP401Error 
         return resp_data
     
     
-

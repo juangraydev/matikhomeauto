@@ -24,7 +24,7 @@ SECRET_KEY = '-8p5r9=ny#by!_+b=6i*#gq08b-!^*y$%9%6wy3(kjucmb5ar)'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
+APP_VERSION = "0.0.1"
 SESSION_TOKEN_EXPIRY = 60
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -51,6 +51,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'core.util.response_interceptor.ResponseMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
