@@ -23,7 +23,7 @@ Http.interceptors.request.use(
 		// Do something before request is sent
 		// If the header does not contain the token and the url not public, redirect to login
 		// if token is found add it to the header
-		config.headers.Authorization = `Bearer`
+		// config.headers.Authorization = `Bearer`
 
 		return config
 	},
