@@ -439,3 +439,14 @@ REMAINING_TIME = "remaining_time"
 # PHASE 7 
 OBJ_PROJECT_MANAGER_NAME = "projectManager"
 OBJ_PROJECT_MANAGER_EMAIL = "projectManagerEmail"
+
+
+
+
+
+
+
+# Matik
+NAME = "name"
+USERNAME = "username"
+ROLE = "role"

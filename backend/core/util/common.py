@@ -34,8 +34,7 @@ from core.constants import identifer as idf
 from rest_framework import status
 from django.utils.dateparse import parse_datetime
 from pytz import timezone
-
-# from core.auth.token_authentication import TokenAuthentication
+from core.auth.token_authentication import TokenAuthentication
 
 LOGGER = logging.getLogger('arv_logger')
 

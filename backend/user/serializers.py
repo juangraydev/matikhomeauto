@@ -10,14 +10,14 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = '__all__'
 
-    def create(self, validated_data):
-        """Saves the data to the database and returns the instance of
-            the created info.
+    # def create(self, validated_data):
+    #     """Saves the data to the database and returns the instance of
+    #         the created info.
 
-        Args:
-            - validated_data: info data
+    #     Args:
+    #         - validated_data: info data
 
-        Returns:
-            - Info instance
-        """
-        return User.objects.create(**validated_data)
+    #     Returns:
+    #         - Info instance
+    #     """
+    #     return User.objects.create(**validated_data)

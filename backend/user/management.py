@@ -1,10 +1,17 @@
 import logging
+import jwt
 from core.repository.repository import Repository
 from core.repository.repository import Module
+from django.db.models import Q as QueryFilter, Value
+from core.constants import identifer as idf
 from user.models import *
 from user.serializers import *
+import json
+from django.conf import settings
+
 
 from core.util import common
+from core.auth.token_authentication import TokenAuthentication
 
 class UserManagement(Repository):
     """
@@ -22,73 +29,35 @@ class UserManagement(Repository):
         """
         Handles the saving of user and generating of token
         """
-        return {"message": "Login"}
-        # LOGGER.debug("User Management Function:  login")
-        # LOGGER.debug(common.get_data(request))
+        data = request.data
 
-        # header = common.get_value(idf.REQ_HEADER, request)
+        return data
 
-        # cmp_auth = CompanySummaryManagement()
-        # token_auth = TokenAuthentication()
-
-        # header = common.get_headers(request)
-
-        # # Extract data from header
-        # data = self.__get_data_from_headers(header)
-
-        # # Append expiry on token
-        # data[idf.OBJ_EXP] = token_auth.set_expiry()
-
-        # # Encode token
-        # token = jwt.encode(data, settings.SECRET_KEY)
-
-        # # Append token
-        # data[idf.OBJ_ACCESS_TOKEN] = str(token, 'utf-8')
-
-        # reportId = cmp_auth.find_latest_report()[idf.ID_REPORT]
-
-        # user_exists = self.user_exists(data, token)
-
-        # if not user_exists:
-        #     # if user does not exist, then save to db
-        #     # default page is company wide
-        #     data[idf.OBJ_DEFAULT_PAGE] = json.dumps({
-        #         idf.ID_REPORT: reportId,
-        #         idf.OBJ_URL: settings.DEFAULT_PAGE,
-        #         idf.OBJ_NAME: "",
-        #         idf.OBJ_CODE: "",
-        #         idf.OBJ_TAB: 0
-        #     })
-
-        #     self._existing_user = super().save(data).to_dict()
-        #     # Append general user role
-        #     self.user_role = 0
-        # else:
-        #     default_page = self._existing_user[idf.OBJ_DEFAULT_PAGE]
-        #     if type(default_page) is str:
-        #         default_page = json.loads(default_page)
-        #     if default_page[idf.ID_REPORT] == '':
-        #         # update default reportId if new reportId is generated
-        #         onesign_uid = common.get_value(idf.OBJ_ONESIGN_UID, data)
-        #         user = self.find_by_criteria(QueryFilter(
-        #             onesign_uid=onesign_uid))[idf.INSTANCES].first()
-        #         default_page[idf.ID_REPORT] = reportId
-        #         self._existing_user[idf.OBJ_DEFAULT_PAGE] = default_page
-        #         self.update({'default_page': json.dumps(default_page)}, user)
-        # header[idf.TOKEN] = token
-        # header[idf.OBJ_USER_SETTING] = {
-        #     idf.OBJ_ROLE: self.user_role,
-        #     idf.OBJ_DEFAULT_PAGE: common.string_to_dict(
-        #         self._existing_user[idf.OBJ_DEFAULT_PAGE])
-        # }
-
-        # return common.create_response(resp_header=header)
-
-
+#AttributeError: 'dict' object has no attribute 
 
     def register(self, request):
-        
-        # data = common.get_data(request)
-        print("request")
-        return {"message": "Register"}
+        response={}
+        resp_data={}
+        data_obj = {
+            idf.OBJ_ID: "",
+            idf.NAME: request[idf.NAME],
+            idf.USERNAME: request[idf.USERNAME],
+            idf.ROLE: 0,
+        }
+
+        try:
+            encrypted_pass = TokenAuthentication.encrypt_pass(request[idf.OBJ_PASSWORD])
+            data_obj[idf.OBJ_PASSWORD] = encrypted_pass.decode('UTF-8')
+            super().save(data_obj)
+            criteria = QueryFilter(username=request[idf.USERNAME])
+            response = super().find_by_criteria(criteria)
+            resp_data = common.get_value(idf.SERIALIZED, response)[0]
+            
+        except NameError:
+            print("error db", NameError)
+        except Exception as error:
+            print("error db", error)
+        return resp_data
+    
+    
 

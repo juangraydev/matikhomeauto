@@ -25,7 +25,7 @@ SECRET_KEY = '-8p5r9=ny#by!_+b=6i*#gq08b-!^*y$%9%6wy3(kjucmb5ar)'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-
+SESSION_TOKEN_EXPIRY = 60
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_HEADERS = ['sm-attr-query', 'content-type', 'Authorization']
