@@ -92,7 +92,9 @@ function LandingPage() {
 
     const LoginAPI = (data) => {
         // alert("api login")
-        loginAPI(data)
+        loginAPI(data).then(()=>{
+            navigate("/dashboard");
+        })
     }
     const RegisterAPI = (data) => {
 

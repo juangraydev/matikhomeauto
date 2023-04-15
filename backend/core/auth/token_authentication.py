@@ -52,7 +52,6 @@ class TokenAuthentication():
                           options={"verify_exp": False})
 
     def encrypt_pass(self, password):
-
         return jwt.encode({idf.OBJ_PASSWORD: password}, settings.SECRET_KEY, algorithm="HS256") 
     
     def decrypt_pass(self, user_pass):

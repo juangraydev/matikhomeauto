@@ -25,6 +25,7 @@ import BusinessIcon from '@mui/icons-material/Business';
 
 function UserDashboard(props) {
 	const navigate  = useNavigate();
+    console.log("rops.icon",props);
     
     return (
     <>
@@ -40,19 +41,20 @@ function UserDashboard(props) {
 
             }}>
                 {{
-                    1: (
+                    
+                    0: (
                         <KitchenIcon sx={{fontSize: 55, color: "#039be5"}}/>
                     ),
-                    2: (
+                    1: (
                         <ChairIcon sx={{fontSize: 55, color: "#039be5"}}/>
                     ),
-                    3: (
+                    2: (
                         <SingleBedIcon sx={{fontSize: 55, color: "#039be5"}}/>
                     ),
-                    4: (
+                    3: (
                         <BusinessIcon sx={{fontSize: 55, color: "#039be5"}}/>
                     ),
-                    5: (
+                    4: (
                         <GarageIcon sx={{fontSize: 55, color: "#039be5"}}/>
                     ),
                     default: (

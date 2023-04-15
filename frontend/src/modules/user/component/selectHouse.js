@@ -38,15 +38,13 @@ const TextFieldstyled = styled(TextField)({
   });
 
 export default function SelectTextFields({selected, houses, setSelectedHouse}) {
-  
-  
-  console.log("props?.select?.name", houses, selected, setSelectedHouse);
-  console.log("propseee", selected?.name);
+
   const handleSelectHouse = (house) => {
-    
     setSelectedHouse(houses[house])
-    
   }
+
+  console.log("selected", houses, selected);
+
   return (
     <Box
       component="form"
@@ -62,10 +60,9 @@ export default function SelectTextFields({selected, houses, setSelectedHouse}) {
           select
           label="Home List"
           value={selected.id}
+          defaultValue={houses[0].id}
           size="small"
-          
           sx={{ input: { color: 'white'}}}
-        //   helperText="Please select your currency"
         >
           {houses.map((home, idx) => (
             <MenuItem key={home.id} value={home.id} onClick={() => handleSelectHouse(idx)}>

@@ -5,13 +5,17 @@ import Http from '../../shared/util/Http'
 export const loginAPI = async (data) => {
     return new Promise(async (resolve, reject) => {
         // dispatch(fetchLoginTokenData())
+        console.log("data", data);
         return Http.post(process.env.REACT_APP_API_LOGIN, data)
             .then(response => {
-                // logger('[LOGIN] Retrieving token data')
+                console.log('[LOGIN] Retrieving token data',response.data.body?.data)
+                localStorage.setItem("TOKEN", response.data.body?.data?.token)
+                localStorage.setItem("HOUSE_LIST", JSON.stringify(response.data.body?.data.houseList))
                 resolve()
             })
             .catch(error => {
-                // logger('[LOGIN] Error token data')
+                console.log('[LOGIN] Error token data', error)
+                reject()
             })
     })
 }

@@ -16,41 +16,59 @@ import Header from "../component/header"
 import SelectHouse from "../component/selectHouse"
 import TungstenIcon from '@mui/icons-material/Tungsten';
 import { styled } from '@mui/material/styles';
+import { homeList } from "./service";
 
 import RoomCard from "../component/RoomCard"
 
 function UserDashboard() {
     const navigate  = useNavigate();
-    const [loading, setLoading] = React.useState(1);
-    const [houses, setHouse] = React.useState()
-    const [selectedHouse, setSelectedHouse] = React.useState()
-    const [rooms, setRooms] = React.useState([{name: "Kitchen", icon: 1},{name: "Living Room", icon: 2},{name: "Garage", icon: 5},{name: "Bed Room", icon: 3},{name: "Office", icon: 4}]);
+    const [loading, setLoading] = React.useState(0);
+    const [houses, setHouse] = React.useState([])
+    const [selectedHouse, setSelectedHouse] = React.useState({})
+    // const [rooms, setRooms] = React.useState([{name: "Kitchen", icon: 1},{name: "Living Room", icon: 2},{name: "Garage", icon: 5},{name: "Bed Room", icon: 3},{name: "Office", icon: 4}]);
+    const [rooms, setRooms] = React.useState([]);
 
-    
     React.useEffect(()=>{
-        setHouse([
-            {id: 1, name: "Mansion"},
-            {id: 2, name: "Subdivision"},
-            {id: 3, name: "House"},
-            {id: 4, name: "Farm House"}
-        ])
-        setSelectedHouse([
-            {id: 1, name: "Mansion"},
-            {id: 2, name: "Subdivision"},
-            {id: 3, name: "House"},
-            {id: 4, name: "Farm House"}
-        ][0]);
-        setLoading(0);
+        homeList()
+            .then((res) => {
+                console.log("[Home List]", res);
+                setHouse(res);
+            })
     }, [])
 
-    const handleSelectHouse = (house) => {
+    React.useEffect(()=>{
+        if(houses.length != 0){
+            console.log("[default house]", houses[0]);
+            setSelectedHouse(houses[0])
+        }
+    }, [houses])
 
-        setSelectedHouse(house)
-    }
+    React.useEffect(()=>{
+        if(selectedHouse) {
+            console.log("selectedHouse", selectedHouse);
+            setRooms(selectedHouse["rooms"])
+        }
+    }, [selectedHouse])
+
+    // React.useEffect(()=>{
+    //     if(localStorage.getItem("HOUSE_LIST")){
+    //         setHouse(JSON.parse(localStorage.getItem("HOUSE_LIST")))
+    //         setSelectedHouse(JSON.parse(localStorage.getItem("HOUSE_LIST"))[0]);
+    //         setRooms(JSON.parse(localStorage.getItem("HOUSE_LIST"))[0]["rooms"])
+    //     }else{
+    //         setHouse([])
+    //         setSelectedHouse({})
+    //         setRooms([])
+    //     }
+    //     setLoading(0);
+    // }, [])
+
+    const handleSelectHouse = (house) => setSelectedHouse(house)
 
     if (loading) {
         return <>Loading .....</>
     }
+
     return (
     <>
         <Header />
@@ -58,7 +76,7 @@ function UserDashboard() {
             <Box sx={{ width: '100%' }}>
                 <Grid container spacing={2}>
                     <Grid item xs={12} sx={{display: "flex", alignItems: "center"}}>
-                        <SelectHouse houses={houses} selected={selectedHouse} setSelectedHouse={handleSelectHouse}/>
+                        {houses.length != 0 && <SelectHouse houses={houses} selected={selectedHouse} setSelectedHouse={handleSelectHouse}/>}
                         <SettingsIcon sx={{marginLeft: "10px"}}/>
                     </Grid>
                     <Grid item xs={12} sx={{display: "flex", alignItems: "center"}}>
@@ -66,7 +84,7 @@ function UserDashboard() {
                             Rooms 
                         </Typography>
                     </Grid>
-                    { rooms.map((room, idx) => <RoomCard name={room?.name} icon={room?.icon}/>) }
+                    { rooms && rooms.map((room, idx) => <RoomCard name={room?.name} icon={room?.type}/>) }
                     <Grid item xs={12} sx={{display: "flex", alignItems: "center"}}>
                         <Typography variant="button" gutterBottom sx={{fontWeight: 600, marginBlock: 0.35, color: "#757575" }} >
                             All Control Panel 

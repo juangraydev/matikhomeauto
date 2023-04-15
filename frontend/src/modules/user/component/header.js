@@ -11,43 +11,36 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
+import { useNavigate } from "react-router-dom";
 
-const pages = ['Products', 'Pricing', 'Blog'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 function ResponsiveAppBar(props) {
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
+	const navigate  = useNavigate();
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
+  
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
-
+  
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+  
+  const handleSelectUserMenu = (value) => {
+    handleCloseUserMenu()
+    if(value == "Logout"){
+      localStorage.clear()
+      navigate("/")
+    }
+  }
 
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <img src={require("../../../shared/images/matik-upper.png")} alt="logo" width={200} style={{margin: "auto",  display: "block"}}/>
-				
-
-          
-          
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            
-          </Box>
-
+          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}/>
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
@@ -71,7 +64,7 @@ function ResponsiveAppBar(props) {
               onClose={handleCloseUserMenu}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                <MenuItem key={setting} onClick={(e) => handleSelectUserMenu(setting)}>
                   <Typography textAlign="center">{setting}</Typography>
                 </MenuItem>
               ))}

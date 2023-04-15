@@ -19,6 +19,7 @@ class Rooms(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
     home = models.ForeignKey(Homes, models.DO_NOTHING)
+    type = models.IntegerField() ## 0 - Kitchen, 1 - Living Room, 2 - Garage, 3 - Bed Room, 5 - Office
 
     class Meta:
         managed = True

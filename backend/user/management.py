@@ -48,6 +48,7 @@ class UserManagement(Repository):
             resp_data[idf.TOKEN] = token_auth.encode_token(user)
         except Exception as error:
             print("[Error]", error)
+            raise HTTP401Error
 
         return resp_data
 
