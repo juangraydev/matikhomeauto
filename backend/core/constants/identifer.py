@@ -452,3 +452,8 @@ USERNAME = "username"
 ROLE = "role"
 OBJ_HOUSE_LIST = "houseList"
 OBJ_ROOMS = "rooms"
+OBJ_HOUSE_NAME = "housename"
+
+
+OBJ_USER_ID = "user_id"
+OBJ_HOME_ID = "home_id"

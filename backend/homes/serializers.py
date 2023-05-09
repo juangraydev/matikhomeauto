@@ -10,14 +10,21 @@ class HomesSerializer(serializers.ModelSerializer):
         model = Homes
         fields = '__all__'
 
-    # def create(self, validated_data):
-    #     """Saves the data to the database and returns the instance of
-    #         the created info.
+class RoomsSerializer(serializers.ModelSerializer):
+    """
+    Converts info querysets and model instance to native python data types.
+    """
+    class Meta:
+        """Meta class"""
+        model = Rooms
+        fields = '__all__'
 
-    #     Args:
-    #         - validated_data: info data
-
-    #     Returns:
-    #         - Info instance
-    #     """
-    #     return User.objects.create(**validated_data)
+class HomeUserSerializer(serializers.ModelSerializer):
+    """
+    Converts info querysets and model instance to native python data types.
+    """
+    class Meta:
+        """Meta class"""
+        model = HomeUserAccess
+        fields = '__all__'
+        

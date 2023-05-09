@@ -8,7 +8,10 @@ from core.util.model_to_dict import ModelToDictionary
 class Devices(models.Model, ModelToDictionary):
     id = models.AutoField(primary_key=True)
     key = models.CharField(max_length=100)
-    home = models.ForeignKey(Homes, models.DO_NOTHING)
+    home = models.ForeignKey(Homes, models.DO_NOTHING, null=True)
+    room = models.ForeignKey(Rooms, models.DO_NOTHING, null=True)
+    type = models.CharField(max_length=100, null=True)
+    status = models.CharField(max_length=100, null=True)
 
     class Meta:
         managed = True

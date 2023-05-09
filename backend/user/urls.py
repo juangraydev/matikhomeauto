@@ -6,5 +6,11 @@ urlpatterns = [
     ## login
     path('login/', views.UserLogin.as_view()),
     ## register
-    path('register/', views.UserRegister.as_view())
+    path('register/', views.UserRegister.as_view()),
+
+    ##get, put, post
+    path('users/', views.UserView.as_view()),
+
+    path('admin/summary/', views.AdminView.as_view())
+
 ]

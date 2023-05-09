@@ -13,6 +13,8 @@ from core.util.custom_exceptions import *
 
 from core.util import common
 from core.auth.token_authentication import TokenAuthentication
+from homes.management import HomesManagement
+from homes.management import HomeUserAccessManagement
 
 class UserManagement(Repository):
     """
@@ -35,6 +37,24 @@ class UserManagement(Repository):
             print("[Error] Username not Found", error)
             raise HTTP401Error
 
+        return resp_data
+    
+    def find_all(self):
+        resp_data = []
+        try:
+            resp_data = super().find_all()
+        except Exception as error:
+            print("[Error]")
+           
+        return resp_data
+    
+    def add_user(self):
+        resp_data = []
+        try:
+            resp_data = super().find_all()
+        except Exception as error:
+            print("[Error]")
+           
         return resp_data
 
     def login(self, request):
@@ -61,11 +81,16 @@ class UserManagement(Repository):
             idf.ROLE: 0,
         }
         token_auth = TokenAuthentication()
+        home = HomesManagement()
+        access = HomeUserAccessManagement()
         try:
             encrypted_pass = token_auth.encrypt_pass(request[idf.OBJ_PASSWORD])
             data_obj[idf.OBJ_PASSWORD] = encrypted_pass.decode('UTF-8')
-            super().save(data_obj)
+            user_resp = super().save(data_obj)
+            home_resp = home.add_house(name=request[idf.OBJ_HOUSE_NAME])
+            access_resp = access.add_user_house(userId=user_resp.id, homeId=home_resp.id)
             resp_data = self.login(request=request)
+            # access
             
         except Exception as error:
             print("[Error]", error)

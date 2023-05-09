@@ -10,7 +10,6 @@ export const loginAPI = async (data) => {
             .then(response => {
                 console.log('[LOGIN] Retrieving token data',response.data.body?.data)
                 localStorage.setItem("TOKEN", response.data.body?.data?.token)
-                localStorage.setItem("HOUSE_LIST", JSON.stringify(response.data.body?.data.houseList))
                 resolve()
             })
             .catch(error => {
@@ -24,11 +23,13 @@ export const registerAPI = async (data) => {
         // dispatch(fetchLoginTokenData())
         return Http.post(process.env.REACT_APP_API_REGISTER, data)
             .then(response => {
-                // logger('[REGISTER] Retrieving token data')
+                localStorage.setItem("TOKEN", response.data.body?.data?.token)
                 resolve()
             })
             .catch(error => {
                 // logger('[REGISTER] Error token data')
+                console.log('[REGISTER] Error token data', error)
+                reject()
             })
     })
 }
