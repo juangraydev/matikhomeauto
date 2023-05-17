@@ -1,20 +1,28 @@
 import Http from '../../../shared/util/Http'
+import { 
+    fetchHomeData,
+    successHomeData,
+    failHomeData,
+    selectHome,
+    selectRoom
+} from './store/actionCreators'
 
 // get example
 
-export function homeList() {
-    return new Promise(async (resolve, reject) => {
-        // dispatch(fetchLoginTokenData())
-        return Http.get(process.env.REACT_APP_API_HOUSE_LIST)
-            .then(response => {
-                console.log('[HOME LIST] Retrieving data: ',response.data.body?.data)
-                resolve(response.data.body?.data);
-            })
-            .catch(error => {
-                console.log('[HOME LIST] Error: ', error)
-                reject()
-            })
-    })
+export const homeList = () => async dispatch => {
+    dispatch(fetchHomeData())
+    return Http.get(process.env.REACT_APP_API_HOUSE_LIST)
+        .then(response => {
+            console.log('[HOME LIST] Retrieving data: ', response.data.body?.data[0] ? response.data.body?.data[0] : {})
+            dispatch(successHomeData(response.data.body?.data))
+            dispatch(selectHome(response.data.body?.data[0] ? response.data.body?.data[0] : {}))
+            dispatch(selectRoom(response.data.body?.data[0] && "ALL")) 
+        })
+        .catch(error => {
+            console.log('[HOME LIST] Error: ', error)
+            dispatch(failHomeData(error))
+        })
+    
 }
 
 // export const loginAPI = async (data) => {

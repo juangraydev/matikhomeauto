@@ -22,8 +22,15 @@ import TungstenIcon from '@mui/icons-material/Tungsten';
 import { styled } from '@mui/material/styles';
 import { homeList } from "./service";
 
+import { w3cwebsocket as W3CWebSocket } from "websocket";
+
 import RoomCard from "../component/RoomCard"
 import GeneralSetting from "../component/GeneralSetting"
+import { useSelector, useDispatch } from 'react-redux'
+import { 
+    selectHome,
+    selectRoom
+} from './store/actionCreators'
 
 const style = {
     position: 'absolute',
@@ -34,41 +41,102 @@ const style = {
     p: 4,
   };
 
+// const clientWS = new W3CWebSocket();
+
 
 function UserDashboard() {
     const navigate  = useNavigate();
     const [loading, setLoading] = React.useState(1);
     const [houses, setHouse] = React.useState([])
     const [selectedHouse, setSelectedHouse] = React.useState({})
+    const [devices, setDevices] = React.useState([]);
     const [rooms, setRooms] = React.useState([]);
     const [controlType, setControlType] = React.useState("ALL");
+    const [selectedRooms, setSelectedRooms] = React.useState("ALL");
     const [modal, setModal] = React.useState({
         status: false,
         type: "houseSetting"
     })
 
+    const [client, setClient] = React.useState()
+    const homeData = useSelector(state => state.homeData.data)
+    const isHomeDataPending = useSelector(state => state.homeData.isPending)
+    const selectedHome = useSelector(state => state.homeData.selectedHome)
+    const selectedRoom = useSelector(state => state.homeData.selectedRoom)
+
+	const dispatch = useDispatch()
+    console.log("[isHomeDataPending]", isHomeDataPending);
+    
+    //GET HOME LIST QUERY TO BACKEND
     React.useEffect(()=>{
-        homeList()
-            .then((res) => {
-                if(res.length == 0){
-                    
-                }else {
-                    setHouse(res);
-                }
-                setLoading(0)
-            })
+        dispatch(homeList())
     }, [])
 
+    //SET HOME LIST TO COMPONENT STATE
     React.useEffect(()=>{
-        if(houses.length != 0) setSelectedHouse(houses[0])
-    }, [houses])
+        if (homeData) {
+            setHouse(homeData)
+            setSelectedRooms("ALL")
+        }
+    },[homeData])
 
+    //SET ROOMS TO COMPONENT STATE
     React.useEffect(()=>{
-        if(selectedHouse) setRooms(selectedHouse["rooms"])
-    }, [selectedHouse])
+        if(selectedHome) setRooms(selectedHome['rooms'])
+        
+    },[selectedHome])
 
-    const handleSelectHouse = (house) => setSelectedHouse(house)
-    const handleControlType = (type) => setControlType(type)
+    // [WebSocket QUERY]
+    React.useEffect(() => {
+        if(isNaN(selectedHome)){
+            const url = 'ws://localhost:8000/ws/'+ selectedHome?.id +'/' + selectedRoom  + '/';
+            setClient(new W3CWebSocket(url))
+        }
+    }, [selectedHome,selectedRoom])
+
+
+    // [WebSocket Functions]
+    React.useEffect(()=>{
+        if(client){
+            client.onopen = () => {
+                console.log("[WebSocket] client open");
+            };
+    
+            client.onmessage = (message) => {
+                const dataFromServer = JSON.parse(message.data);
+                setDevices(dataFromServer?.deviceStatus)
+                console.log("[WebSocket] deviceStatus", dataFromServer);
+            };
+    
+            client.onclose = () => {
+                console.log("[WebSocket] client close");
+            };
+        }
+    }, [client])
+
+
+
+    const handleClickChannel = (id, status) => {
+        console.log("[WebSocket] onClick Channel");
+        client.send(JSON.stringify({
+            'type': "deviceInfo",
+            "channelId": id,
+            "status": status
+        }))
+    }
+
+    const handleSelectHouse = (house) => {
+        dispatch(selectHome(house))
+        dispatch(selectRoom("ALL"))
+        setControlType("ALL")
+    }
+
+    const handleControlType = (type) => {
+        console.log("[selected room]", )
+        let roomId = rooms.filter(room => room?.name == type)[0]?.id ? rooms.filter(room => room?.name == type)[0]?.id : "ALL"
+        dispatch(selectRoom(roomId)) 
+        setControlType(type)
+    }
 
 
     const handleOpenModal = () => {
@@ -81,90 +149,69 @@ function UserDashboard() {
     return (
     <>
         <Modal open={modal?.status} handleClose={handleCloseModal}>
-            <GeneralSetting data={selectedHouse}/>
+            {selectedHome?.name && <GeneralSetting data={selectedHome}/>}
         </Modal>
-        <Header />
-        <Container maxWidth={"xl"} sx={{padding: "24px 24px"}} id="waa"> 
+        <Container maxWidth={"xl"} sx={{padding: "24px 24px"}}> 
             <Box sx={{ width: '100%' }}>
-                { loading ?  <>Loading .....</> 
+                { isHomeDataPending ?  <>Loading .....</> 
                 : <Grid container spacing={2}>
                     <Grid item xs={12} sx={{display: "flex", alignItems: "center"}}>
-                        {houses.length != 0 && <SelectHouse houses={houses} selected={selectedHouse} setSelectedHouse={handleSelectHouse}/>}
-                        <IconButton sx={{marginLeft: "10px"}} onClick={handleOpenModal}>
-                            <SettingsIcon/>
-                        </IconButton>
+                        {houses.length != 0 && (<>
+                            <SelectHouse houses={houses} selected={selectedHome} setSelectedHouse={handleSelectHouse}/>
+                            <IconButton sx={{marginLeft: "10px"}} onClick={handleOpenModal}>
+                                <SettingsIcon/>
+                            </IconButton>
+                        </>)}
                     </Grid>
                     <Grid item xs={12} sx={{display: "flex", alignItems: "center"}}>
                         <Typography variant="button" gutterBottom sx={{fontWeight: 600, marginBlock: 0.35, color: "#757575" }} >
                             Rooms 
                         </Typography>
                     </Grid>
-                    <Grid item xs={2}>
-                        <Paper sx={{
-                                backgroundColor: "#e0e0e0",
-                                height: "80px", 
-                                padding: 2, 
-                                display: "flex",
-                                flexDirection: "column",
-                                alignItems: "center",
-                                justifyContent: "center"
-                            }}
-                            onClick={() => handleControlType("ALL")}
-                        >
-                            <DashboardIcon sx={{fontSize: 55, color: (controlType == "ALL") ? "#039be5" : "#616161"}}/>
-                            <Typography variant="button" gutterBottom sx={{fontWeight: 600, marginBlock: 0.35, color: (controlType == "ALL") ? "#039be5" : "#616161" }} >
-                                ALL
-                            </Typography>
-                        </Paper>
-                    </Grid>
+                    
                     { rooms && rooms.map((room, idx) => <RoomCard setControlType={handleControlType} controlType={controlType} name={room?.name} icon={room?.type}/>) }
                     <Grid item xs={12} sx={{display: "flex", alignItems: "center"}}>
                         <Typography variant="button" gutterBottom sx={{fontWeight: 600, marginBlock: 0.35, color: "#757575" }} >
                         {
-                            (controlType.toUpperCase() + " Control Panel")
+                            ((controlType.toUpperCase() == "ALL" ?  selectedHome?.name?.toUpperCase() : controlType.toUpperCase()) + "'s Control Panel")
                         } 
                         </Typography>
                     </Grid>
-                    
                     <>
-                        <Grid item xs={2}>
-                                <Paper sx={{
-                                    backgroundColor: "#e0e0e0",
-                                    height: "80px", 
-                                    padding: 2, 
-                                    display: "flex",
-                                    // flexDirection: "column"
-                                }}>
-                                    <TungstenIcon sx={{fontSize: 75, color: "#616161"}}/>
-                                    <Box sx={{display: "flex", flexDirection: "column", paddingBlock: "10px"}}>
-                                        <Typography variant="button" gutterBottom sx={{fontWeight: 600, marginBlock: 0.35, color: "#616161" }} >
-                                            Channel 1 
-                                        </Typography>
-                                        <Typography variant="button" gutterBottom sx={{fontWeight: 600, marginBlock: 0.35, color: "#616161" }} >
-                                            Off
-                                        </Typography>
-                                    </Box>
-                                </Paper>
-                            </Grid>
-                            <Grid item xs={2}>
-                                <Paper sx={{
-                                    backgroundColor: "#e0e0e0",
-                                    height: "80px", 
-                                    padding: 2, 
-                                    display: "flex",
-                                    // flexDirection: "column"
-                                }}>
-                                    <TungstenIcon sx={{fontSize: 75, color: "#039be5"}}/>
-                                    <Box sx={{display: "flex", flexDirection: "column", paddingBlock: "10px"}}>
-                                        <Typography variant="button" gutterBottom sx={{fontWeight: 600, marginBlock: 0.35, color: "#039be5" }} >
-                                            Channel 2
-                                        </Typography>
-                                        <Typography variant="button" gutterBottom sx={{fontWeight: 600, marginBlock: 0.35, color: "#039be5" }} >
-                                            On
-                                        </Typography>
-                                    </Box>
-                                </Paper>
-                            </Grid>
+                        {
+                            devices.map((device, idx) => {
+                                console.log("[devices]",device, JSON.parse(device.status))
+                                const val = JSON.parse(device.status)?.on
+                                
+                                return(
+                                    <Grid item xs={2}>
+                                        <Paper onClick={()=>handleClickChannel(device.id, !val)} sx={{
+                                            backgroundColor: (!val ? "#e0e0e0" : "white"),
+                                            height: "80px", 
+                                            padding: 2, 
+                                            display: "flex",
+                                        }}>
+                                            <TungstenIcon 
+                                                sx={{
+                                                    fontSize: 75, 
+                                                    color: (!val  ? "#616161" : "#039be5")
+                                                }}
+                                            />
+                                            <Box sx={{display: "flex", flexDirection: "column", paddingBlock: "10px"}}>
+                                                <Typography variant="button" gutterBottom sx={{fontWeight: 600, marginBlock: 0.35, color: (!val  ? "#616161" : "#039be5") }} >
+                                                    {device?.name}
+                                                </Typography>
+                                                <Typography variant="button" gutterBottom sx={{fontWeight: 600, marginBlock: 0.35, color: (!val  ? "#616161" : "#039be5") }} >
+                                                    {val ? "On" : "Off"}
+                                                </Typography>
+                                            </Box>
+                                        </Paper>
+                                    </Grid>
+                                )
+                            })
+                        }
+                        
+                        
                     </>
 
                 </Grid>

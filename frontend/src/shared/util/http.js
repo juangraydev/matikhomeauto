@@ -2,11 +2,11 @@ import axios from 'axios'
 // import * as types from './Constants'
 // import { logger } from './Logger'
 // import { history } from './../../router/Router'
-// import { store } from '../../store/config'
+import { store } from '../../store/config'
 // import { setUserSessionExpired } from '../../modules/login/pages/store/actionCreators'
 // import i18n from '../../i18n'
 // import _ from 'lodash'
-// import { showMessage } from 'router/store/action-creators'
+import { showMessage } from '../../router/store/actionCreators'
 
 // create new instance
 const Http = axios.create()
@@ -41,7 +41,6 @@ Http.interceptors.request.use(
  */
 Http.interceptors.response.use(
 	function (response) {
-		
 		return response
 	},
 	function (error) {

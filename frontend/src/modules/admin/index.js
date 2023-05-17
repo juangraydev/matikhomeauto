@@ -18,9 +18,9 @@ import Drawer from '@mui/material/Drawer';
 import AppBar from '@mui/material/AppBar';
 import CssBaseline from '@mui/material/CssBaseline';
 import Toolbar from '@mui/material/Toolbar';
-import List from '@mui/material/List';
+import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
+import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -50,7 +50,7 @@ function Admin() {
 	const navigate  = useNavigate();
     let location = useLocation();
 	const [anchorElUser, setAnchorElUser] = React.useState(null);
-    const [pageType, setPageType] = React.useState(1);
+    const [pageType, setPageType] = React.useState(0);
 
 
     React.useEffect(()=>{
@@ -77,89 +77,51 @@ function Admin() {
     
     return (
 	<React.Fragment>
-		<Box  sx={{ display: 'flex' }} >
-			<AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-				<Toolbar>
-					<Box component="div" sx={{ flexGrow: 1 }}>
-						<img src={require("../../shared/images/matik-upper.png")} alt="logo" width={200} style={{margin: "auto",  display: "block"}}/>
+		<Box component="main" sx={{ flexGrow: 1, }}>
+			<Container maxWidth={"xl"} sx={{padding: "24px 24px"}}>
+				{/* <Drawer
+					id="test"
+					variant="permanent"
+					sx={{
+						width: drawerWidth,
+						flexShrink: 0,
+						[`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box' },
+					}}
+				>
+					<Toolbar />
+					<Box sx={{ overflow: 'auto' }}>
+					<List>
+						{pages.map((text, index) => (
+						<ListItem key={text} disablePadding>
+							<ListItemButton onClick={()=>setPageType(index)}>
+								<ListItemIcon sx={{minWidth: 35}}>
+									{index == 0 ? <DashboardIcon/> : (index == 1 ? <OtherHousesIcon /> : index == 2 ? <DeviceHubIcon /> : <RecentActorsIcon /> ) }
+								</ListItemIcon>
+								<ListItemText primary={text} />
+							</ListItemButton>
+						</ListItem>
+						))}
+					</List>
+					
 					</Box>
-					<div>
-						<IconButton
-							size="large"
-							aria-label="account of current user"
-							aria-controls="menu-appbar"
-							aria-haspopup="true"
-							color="inherit"
-							onClick={handleOpenUserMenu} 
-						>
-							<AccountCircleIcon/>
-						</IconButton>
-						<Menu
-						sx={{ mt: '45px' }}
-							id="menu-appbar"
-							anchorEl={anchorElUser}
-							anchorOrigin={{
-								vertical: 'top',
-								horizontal: 'right',
-							}}
-							keepMounted
-							transformOrigin={{
-								vertical: 'top',
-								horizontal: 'right',
-							}}
-							open={Boolean(anchorElUser)}
-							onClose={handleCloseUserMenu}
-							>
-							{settings.map((setting) => (
-								<MenuItem key={setting} onClick={(e) => handleSelectUserMenu(setting)}>
-								<Typography textAlign="center">{setting}</Typography>
-								</MenuItem>
-							))}
-						</Menu>
-					</div>
-				</Toolbar>
-			</AppBar>
-			<Drawer
-				variant="permanent"
-				sx={{
-				width: drawerWidth,
-				flexShrink: 0,
-				[`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box' },
-				}}
-			>
-				<Toolbar />
-				<Box sx={{ overflow: 'auto' }}>
-				<List>
-					{pages.map((text, index) => (
-					<ListItem key={text} disablePadding>
-						<ListItemButton onClick={()=>setPageType(index)}>
-							<ListItemIcon sx={{minWidth: 35}}>
-								{index == 0 ? <DashboardIcon/> : (index == 1 ? <OtherHousesIcon /> : index == 2 ? <DeviceHubIcon /> : <RecentActorsIcon /> ) }
-							</ListItemIcon>
-							<ListItemText primary={text} />
-						</ListItemButton>
-					</ListItem>
-					))}
-				</List>
-				
-				</Box>
-			</Drawer>
-			<Box component="main" sx={{ flexGrow: 1, mt: 8, p: 2 }}>
+				</Drawer> */}
 				<Typography variant="h6" gutterBottom>Admin / {pages[pageType]}</Typography>
+					
+					{
+						pageType === 0 && <Dashboard/>
+					}
+					{
+						pageType === 1 && <HomeManagement/>
+					}
+					{
+						pageType === 2 && <DeviceManagement/>
+					}
+					{
+						pageType === 3 && <UserManagement/>
+					}
+			</Container>
 				
-				{
-                    pageType === 0 && <Dashboard/>
-                }
-                {
-                    pageType === 1 && <HomeManagement/>
-                }
-                {
-                    pageType === 2 && <DeviceManagement/>
-                }
-                {
-                    pageType === 3 && <UserManagement/>
-                }
-			</Box>
+			
 		</Box>
 
 	</React.Fragment>

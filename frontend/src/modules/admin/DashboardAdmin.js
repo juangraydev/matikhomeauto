@@ -30,43 +30,48 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 
 import { getAdminSummary } from './service'
+import { useSelector, useDispatch } from 'react-redux'
 
 function DashboardAdmin() {
 	const navigate  = useNavigate();
-	const [summary, setSummary] = React.useState([]);
+	const dispatch = useDispatch()
+
+    const summaryData = useSelector(state => state.adminData.summaryData)
+    const summaryFetch = useSelector(state => state.adminData.isPending)
+		console.log("[summaryFetch]", summaryFetch);
 
 	React.useEffect(()=>{
-		getAdminSummary()
-			.then((res) => {
-				console.log("[Admin Summary]", res);
-				setSummary(res);
-			})
-			.catch(() => {
-				setSummary([])
-			})
-	}, [summary != []])
+		dispatch(getAdminSummary())
+	}, [])
 	
     return (
 	<React.Fragment>
 		<Grid container spacing={2}>
-			<Grid item xs={4}>
-				<Paper sx={{ height: 100, background: "#ff646c", color: "white", display: "flex"}}>
-					<OtherHousesIcon sx={{fontSize: 60, margin: "20px!important"}}/>
-					<Typography sx={{width: "auto", marginBlock: "auto"}}>Home List {summary?.home_list}</Typography>
-				</Paper>
-			</Grid>
-			<Grid item xs={4}>
-				<Paper sx={{ height: 100, background: "#59cf5d", color: "white", display: "flex"}}>
-					<DeviceHubIcon sx={{fontSize: 60, margin: "20px!important"}}/>
-					<Typography sx={{width: "auto", marginBlock: "auto"}}>Device List {summary?.device_list}</Typography>
-				</Paper>
-			</Grid>
-			<Grid item xs={4}>
-				<Paper sx={{ height: 100, background: "#1e62f1", color: "white", display: "flex" }}>
-					<RecentActorsIcon sx={{fontSize: 60, margin: "20px!important"}}/>
-					<Typography sx={{width: "auto", marginBlock: "auto"}}>User List {summary?.user_list}</Typography>
-				</Paper>
-			</Grid>
+			{
+				summaryFetch == true ? <>
+					"Loading"
+				</>
+				: <>
+					<Grid item xs={4}>
+						<Paper sx={{ height: 100, background: "#ff646c", color: "white", display: "flex"}}>
+							<OtherHousesIcon sx={{fontSize: 60, margin: "20px!important"}}/>
+							<Typography sx={{width: "auto", marginBlock: "auto"}}>Home List {summaryData?.home_list}</Typography>
+						</Paper>
+					</Grid>
+					<Grid item xs={4}>
+						<Paper sx={{ height: 100, background: "#59cf5d", color: "white", display: "flex"}}>
+							<DeviceHubIcon sx={{fontSize: 60, margin: "20px!important"}}/>
+							<Typography sx={{width: "auto", marginBlock: "auto"}}>Device List {summaryData?.device_list}</Typography>
+						</Paper>
+					</Grid>
+					<Grid item xs={4}>
+						<Paper sx={{ height: 100, background: "#1e62f1", color: "white", display: "flex" }}>
+							<RecentActorsIcon sx={{fontSize: 60, margin: "20px!important"}}/>
+							<Typography sx={{width: "auto", marginBlock: "auto"}}>User List {summaryData?.user_list}</Typography>
+						</Paper>
+					</Grid>
+				</>
+			}
 		</Grid>
 
 	</React.Fragment>
