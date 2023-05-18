@@ -32,21 +32,15 @@ function LandingPage() {
     
 
     return (
-		<Container maxWidth={"false"} className="Container" sx={{backgroundColor: "#38a0ff", height: "100vh", width: "100vw", margin: 0, paddingInline: 45}}>
-            <Grid container spacing={2} >
-                
-                
-                <Grid item xs={6} mt={15}>
-                   <Typography variant="h1">
-                    Home automation system
-                   </Typography>
-                </Grid>
-                <Grid item xs={6} paddingX={3} mt={15} >
-                    <img width={"90%"} src={require("../../shared/images/landing.png")} />
-                </Grid>
-            </Grid>
-            
-            
+		<Container maxWidth={"xl"} className="Container" sx={{paddingInline: "70px!important"}}>
+            <Typography variant="h1" sx={{fontFamily: "inherit", color: "#101840", mt: 5, width: 620, mb: 3}}>
+                Control your home from anywhere.
+            </Typography>
+            <Link href="/register" underline="none" color="#101840" sx={{fontWeight: 500,fontFamily: "inherit"}}>
+                <Button variant="contained" sx={{textTransform: "none", borderRadius: 15, fontSize: 18, paddingBlock: "10px",paddingInline: "25px"}}>
+                    {'Create an account'}
+                </Button>
+            </Link>
 		</Container>
   );
 }

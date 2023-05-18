@@ -16,6 +16,7 @@
     "redux-devtools-extension": "^2.13.9",
     "redux-persist": "^6.0.0",
     "socket.io": "^4.6.1",
+    "webfontloader": "^1.6.28",
     "websocket": "^1.0.34"
   },
   "scripts": {

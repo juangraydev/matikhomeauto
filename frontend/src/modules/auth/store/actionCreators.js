@@ -15,6 +15,13 @@ export function successUserData(data) {
     }
 }
 
+// return success status
+export function resetUserData() {
+    return {
+        type: types.SUCCESS_USER_DATA
+    }
+}
+
 // return fail status
 export function failUserData(error) {
     return {

@@ -1,5 +1,5 @@
 import React from 'react'
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import jwt_decode from "jwt-decode"
 
 import {
@@ -44,12 +44,14 @@ import {
 import MuiAlert from '@mui/material/Alert';
 
 import {loginAPI, registerAPI} from "../../../../modules/auth/service"
+import {resetUserData} from "../../../../modules/auth/store/actionCreators"
 
 import { hideMessage } from '../../../../router/store/actionCreators'
 const settings = ['Account Setting', 'Logout'];
 
 
 function Content (props) {
+    const location = useLocation();
     const navigate  = useNavigate();
     const [anchorElUser, setAnchorElUser] = React.useState(null);
     const [open, setOpen] = React.useState(false);
@@ -57,10 +59,6 @@ function Content (props) {
     const alertOpen = useSelector(state => state.alertMessage.open)
 	const alertType = useSelector(state => state.alertMessage.type)
 	const alertMessage = useSelector(state => state.alertMessage.message)
-
-    
-
-    
 
     const UserData = useSelector(state => state.UserData.data)
 	const dispatch = useDispatch()
@@ -84,15 +82,15 @@ function Content (props) {
 	const handleSelectUserMenu = (value) => {
 		handleCloseUserMenu()
 		if(value == "Logout"){
-		localStorage.clear()
-		navigate("/")
+            dispatch(resetUserData());
+            navigate("/")
 		}
 	}
     
     React.useEffect(()=>{
         console.log("[UserData]",UserData);
-        if(localStorage.getItem("TOKEN")){
-            var decoded = jwt_decode(UserData.token);
+        if(UserData?.token){
+            var decoded = jwt_decode(UserData?.token);
             console.log(decoded);
             if(decoded?.role == 1){
                 navigate("/admin");
@@ -100,7 +98,7 @@ function Content (props) {
                 navigate("/dashboard");
             }
         }else {
-            navigate("/")
+            if(location.pathname == "/admin" || location.pathname == "/dashboard")  navigate("/")
         }
     }, [UserData ])
 
@@ -195,6 +193,7 @@ function Content (props) {
         // setAnchorElNav(null);
       };
     const pages = ['Products', 'Pricing', 'Blog'];
+    console.log("[Role ]", UserData );
     return (
         <React.Fragment>
             <Snackbar
@@ -202,100 +201,108 @@ function Content (props) {
 				open={alertOpen}
 				onClose={handleClose}
 				autoHideDuration={3000}
-				anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+				anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
 			>
                 <MuiAlert elevation={6} variant='filled' onClose={handleClose} severity={alertType}>
 					<div style={{ whiteSpace: 'pre' }}>{alertMessage}</div>
                 </MuiAlert>
 			</Snackbar>
             <Box  sx={{ display: 'fixed' }} >
-                <AppBar position="fixed" sx={{ background: "none", boxShadow: "none"}}>
-                    <Container maxWidth="xl">
-                        <Toolbar>
-                            <Box component="div" sx={{ flexGrow: 0 }}>
-                                <img 
-                                    src={require("../../../images/matik_upper_2.png")} 
-                                    width={200} 
-                                    style={{ display: "block" } }
-                                />
-                            </Box>
-                            
-                            <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                                {
-                                    jwt_decode(UserData.token)?.role == 1 && <>
-                                    {pages.map((page) => (
-                                        <Button
-                                            key={page}
-                                            onClick={handleCloseNavMenu}
-                                            sx={{ my: 2, color: 'black',fontWeight: 600, display: 'block' }}
-                                        >
-                                            {page}
-                                        </Button>
-                                    ))}
-                                    </>
-                                }
-                            {/* {
-                                jwt_decode(UserData.token)?.role == 1 ?
-                                    {pages.map((page) => (
-                                        <Button
-                                            key={page}
-                                            onClick={handleCloseNavMenu}
-                                            sx={{ my: 2, color: 'black',fontWeight: 600, display: 'block' }}
-                                        >
-                                            {page}
-                                        </Button>
-                                    ))}
-                                : <></>
-                            } */}
-                            </Box>
-                            
-                            {
-                                localStorage.getItem("TOKEN") ? (
-                                    <div>
-                                        <IconButton
-                                            size="large"
-                                            aria-label="account of current user"
-                                            aria-controls="menu-appbar"
-                                            aria-haspopup="true"
-                                            color="inherit"
-                                            onClick={handleOpenUserMenu} 
-                                        >
-                                            <AccountCircleIcon/>
-                                        </IconButton>
-                                        <Menu
-                                        sx={{ mt: '45px' }}
-                                            id="menu-appbar"
-                                            anchorEl={anchorElUser}
-                                            anchorOrigin={{
-                                                vertical: 'top',
-                                                horizontal: 'right',
-                                            }}
-                                            keepMounted
-                                            transformOrigin={{
-                                                vertical: 'top',
-                                                horizontal: 'right',
-                                            }}
-                                            open={Boolean(anchorElUser)}
-                                            onClose={handleCloseUserMenu}
+                { (location.pathname != "/login" && location.pathname != "/register") && (
+                    <AppBar position="fixed" sx={{ background: "none", boxShadow: "none"}}>
+                        <Container maxWidth="xl">
+                            <Toolbar>
+                                <Box component="div" sx={{ flexGrow: 0 }}>
+                                    <img 
+                                        src={require("../../../images/matik_upper_2.png")} 
+                                        width={200} 
+                                        style={{ display: "block" } }
+                                    />
+                                </Box>
+                                
+                                <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+                                    {
+                                        UserData && jwt_decode(UserData?.token)?.role == 1 && <>
+                                        {pages.map((page) => (
+                                            <Button
+                                                key={page}
+                                                onClick={handleCloseNavMenu}
+                                                sx={{ my: 2, color: 'black',fontWeight: 600, display: 'block' }}
                                             >
-                                            {settings.map((setting) => (
-                                                <MenuItem key={setting} onClick={(e) => handleSelectUserMenu(setting)}>
-                                                <Typography textAlign="center">{setting}</Typography>
-                                                </MenuItem>
-                                            ))}
-                                        </Menu>
-                                    </div>
-                                ) : (
-                                    <div style={{float: "right"}}>
-                                        <Button variant="contained" sx={{marginInline: 1}} onClick={handleLoginOpen}>Login</Button>
-                                        <Button variant="contained" onClick={handleRegisterOpen}>Register</Button>
-                                    </div>
-                                )
-                            }
-                        </Toolbar>
-                    </Container>
-                </AppBar>
-                <Box component="main" sx={{ flexGrow: 1, paddingTop: 9}}>
+                                                {page}
+                                            </Button>
+                                        ))}
+                                        </>
+                                    }
+                                {/* {
+                                    jwt_decode(UserData.token)?.role == 1 ?
+                                        {pages.map((page) => (
+                                            <Button
+                                                key={page}
+                                                onClick={handleCloseNavMenu}
+                                                sx={{ my: 2, color: 'black',fontWeight: 600, display: 'block' }}
+                                            >
+                                                {page}
+                                            </Button>
+                                        ))}
+                                    : <></>
+                                } */}
+                                </Box>
+                                
+                                {
+                                    UserData ? (
+                                        <div>
+                                            <IconButton
+                                                size="large"
+                                                aria-label="account of current user"
+                                                aria-controls="menu-appbar"
+                                                aria-haspopup="true"
+                                                color="inherit"
+                                                onClick={handleOpenUserMenu} 
+                                            >
+                                                <AccountCircleIcon/>
+                                            </IconButton>
+                                            <Menu
+                                            sx={{ mt: '45px' }}
+                                                id="menu-appbar"
+                                                anchorEl={anchorElUser}
+                                                anchorOrigin={{
+                                                    vertical: 'top',
+                                                    horizontal: 'right',
+                                                }}
+                                                keepMounted
+                                                transformOrigin={{
+                                                    vertical: 'top',
+                                                    horizontal: 'right',
+                                                }}
+                                                open={Boolean(anchorElUser)}
+                                                onClose={handleCloseUserMenu}
+                                                >
+                                                {settings.map((setting) => (
+                                                    <MenuItem key={setting} onClick={(e) => handleSelectUserMenu(setting)}>
+                                                        <Typography textAlign="center">{setting}</Typography>
+                                                    </MenuItem>
+                                                ))}
+                                            </Menu>
+                                        </div>
+                                    ) : (
+                                        <div style={{float: "right"}}>
+                                            <Link href="/login" underline="none" color="#101840" sx={{fontWeight: 500,fontFamily: "inherit", marginInline: 2}}>
+                                                {'Login'}
+                                            </Link>
+                                            <Link href="/register" underline="none" color="#101840" sx={{fontWeight: 500,fontFamily: "inherit", marginInline: 2}}>
+                                                <Button variant="contained" sx={{textTransform: "none", borderRadius: 5}}>{'Create an account'}</Button>
+                                            </Link>
+                                            
+                                        </div>
+                                    )
+                                }
+                            </Toolbar>
+                        </Container>
+                    </AppBar>
+                    )
+                }
+                <Box component="main" sx={{ flexGrow: 1, paddingTop: (location.pathname != "/login" && location.pathname != "/register") && 9}}>
                         {props.children}
                 </Box>
             </Box>

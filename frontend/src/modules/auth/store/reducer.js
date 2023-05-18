@@ -36,6 +36,12 @@ export default function reducer(state = initialState, action) {
                 isPending: false,
                 error: payload
             };
+        case types.RESET_USER_DATA:
+            return {
+                ...state,
+                isPending: false,
+                data: initialState
+            };
         case types.SET_USER_EXPIRED:
             return {
                 ...state,
