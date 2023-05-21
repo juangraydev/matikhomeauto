@@ -8,6 +8,8 @@ import {
 	Paper,
 	TextField,
 	Button,
+    Menu,
+    MenuItem,
     Grid,
     IconButton
 } from "@mui/material"
@@ -32,20 +34,17 @@ import {
     selectRoom
 } from './store/actionCreators'
 
-const style = {
-    position: 'absolute',
-    top: '40%',
-    left: '50%',
-    transform: 'translate(-50%, -60%)',
-    width: 400,
-    p: 4,
-  };
-
-// const clientWS = new W3CWebSocket();
+// Add Menu Components
+import AddMenu from "../component/AddMenu"
 
 
 function UserDashboard() {
     const navigate  = useNavigate();
+
+    //Add State
+    const [openRoom, setOpenRoom] = React.useState(false);
+    const [openPeople, setPeople] = React.useState(false);
+
     const [loading, setLoading] = React.useState(1);
     const [houses, setHouse] = React.useState([])
     const [selectedHouse, setSelectedHouse] = React.useState({})
@@ -53,6 +52,7 @@ function UserDashboard() {
     const [rooms, setRooms] = React.useState([]);
     const [controlType, setControlType] = React.useState("ALL");
     const [selectedRooms, setSelectedRooms] = React.useState("ALL");
+    const [anchorElUser, setAnchorElUser] = React.useState(null);
     const [modal, setModal] = React.useState({
         status: false,
         type: "houseSetting"
@@ -65,7 +65,6 @@ function UserDashboard() {
     const selectedRoom = useSelector(state => state.homeData.selectedRoom)
 
 	const dispatch = useDispatch()
-    console.log("[isHomeDataPending]", isHomeDataPending);
     
     //GET HOME LIST QUERY TO BACKEND
     React.useEffect(()=>{
@@ -77,6 +76,12 @@ function UserDashboard() {
         if (homeData) {
             setHouse(homeData)
             setSelectedRooms("ALL")
+            if(selectedHome == null){
+                dispatch(selectHome(homeData[1]))
+                dispatch(selectRoom("ALL")) 
+            }else {
+                dispatch(selectRoom("ALL")) 
+            }
         }
     },[homeData])
 
@@ -114,6 +119,18 @@ function UserDashboard() {
         }
     }, [client])
 
+    const handleOpenHomeMenu = (event) => {
+		setAnchorElUser(event.currentTarget);
+	};
+
+    const handleSelectHomeMenu = (value) => {
+		handleCloseHomeMenu()
+        if(value == "Home Setting") navigate("/home/setting");
+    }
+    
+    const handleCloseHomeMenu = () => {
+		setAnchorElUser(null);
+	};
 
 
     const handleClickChannel = (id, status) => {
@@ -146,6 +163,8 @@ function UserDashboard() {
         setModal({...modal, status: false});
     }
 
+    const settings = ['Home Setting', 'Device Setting', 'Accesibility Setting'];
+
     return (
     <>
         <Modal open={modal?.status} handleClose={handleCloseModal}>
@@ -154,14 +173,42 @@ function UserDashboard() {
         <Container maxWidth={"xl"} sx={{padding: "24px 24px"}}> 
             <Box sx={{ width: '100%' }}>
                 { isHomeDataPending ?  <>Loading .....</> 
-                : <Grid container spacing={2}>
+                : <Grid container spacing={2} columnGap={0}>
                     <Grid item xs={12} sx={{display: "flex", alignItems: "center"}}>
-                        {houses.length != 0 && (<>
-                            <SelectHouse houses={houses} selected={selectedHome} setSelectedHouse={handleSelectHouse}/>
-                            <IconButton sx={{marginLeft: "10px"}} onClick={handleOpenModal}>
-                                <SettingsIcon/>
-                            </IconButton>
-                        </>)}
+                        <div style={{flexGrow: 1, display: "flex" }}>
+                            {houses.length != 0 && (<>
+                                {/* <SelectHouse houses={houses} selected={selectedHome} setSelectedHouse={handleSelectHouse}/> */}
+                                <Typography variant="h5">{  selectedHome?.name.charAt(0).toUpperCase() + selectedHome?.name.slice(1) }</Typography>
+                                <IconButton sx={{marginLeft: "10px"}} onClick={handleOpenHomeMenu}>
+                                    <SettingsIcon/>
+                                </IconButton>
+                                <Menu
+                                    sx={{ mt: '45px' }}
+                                    id="menu-appbar"
+                                    anchorEl={anchorElUser}
+                                    anchorOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'left',
+                                    }}
+                                    keepMounted
+                                    transformOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'left',
+                                    }}
+                                    open={Boolean(anchorElUser)}
+                                    onClose={handleCloseHomeMenu}
+                                >
+                                    {settings.map((setting) => (
+                                        <MenuItem key={setting} onClick={(e) => handleSelectHomeMenu(setting)}>
+                                            <Typography textAlign="center">{setting}</Typography>
+                                        </MenuItem>
+                                    ))}
+                                </Menu>
+                            </>)}
+                        </div>
+                        <AddMenu/>
+                        
+                        
                     </Grid>
                     <Grid item xs={12} sx={{display: "flex", alignItems: "center"}}>
                         <Typography variant="button" gutterBottom sx={{fontWeight: 600, marginBlock: 0.35, color: "#757575" }} >
@@ -184,24 +231,25 @@ function UserDashboard() {
                                 const val = JSON.parse(device.status)?.on
                                 
                                 return(
-                                    <Grid item xs={2}>
+                                    <Grid item xs={6} sm={4} md={3} lg={2} xl={2}>
                                         <Paper onClick={()=>handleClickChannel(device.id, !val)} sx={{
                                             backgroundColor: (!val ? "#e0e0e0" : "white"),
-                                            height: "80px", 
+                                            height: "auto", 
                                             padding: 2, 
                                             display: "flex",
+                                            flexDirection: "column"
                                         }}>
                                             <TungstenIcon 
                                                 sx={{
-                                                    fontSize: 75, 
+                                                    fontSize: 32, 
                                                     color: (!val  ? "#616161" : "#039be5")
                                                 }}
                                             />
-                                            <Box sx={{display: "flex", flexDirection: "column", paddingBlock: "10px"}}>
+                                            <Box sx={{display: "flex", flexDirection: "column", paddingTop: "10px"}}>
                                                 <Typography variant="button" gutterBottom sx={{fontWeight: 600, marginBlock: 0.35, color: (!val  ? "#616161" : "#039be5") }} >
                                                     {device?.name}
                                                 </Typography>
-                                                <Typography variant="button" gutterBottom sx={{fontWeight: 600, marginBlock: 0.35, color: (!val  ? "#616161" : "#039be5") }} >
+                                                <Typography variant="button" sx={{fontWeight: 600, color: (!val  ? "#616161" : "#039be5") }} >
                                                     {val ? "On" : "Off"}
                                                 </Typography>
                                             </Box>

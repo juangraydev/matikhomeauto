@@ -10,7 +10,7 @@
 body {
   margin: 0;
   /* background: #f5f5f5; */
-  background-image: linear-gradient(to top, #fff1eb 0%, #ace0f9 100%);
+  background-color: #f5f5f7;
   height: 100vh;
   font-family: Imported;
   -webkit-font-smoothing: antialiased;

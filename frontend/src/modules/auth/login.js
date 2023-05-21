@@ -76,7 +76,7 @@ function LoginPage() {
     return (
 		<Container maxWidth={"false"} className="Container" sx={{paddingTop: 4}}>
             <Paper
-                sx={{width: 350, height: 'auto', margin: "auto", paddingBlock: 3, paddingInline: 4}}
+                sx={{minWidth: 300, maxWidth: 400, height: 'auto', margin: "auto", paddingBlock: 3, paddingInline: 4}}
             >
                 <img onClick={()=>{navigate("/")}} src={require("../../shared/images/matik_upper_2.png")} alt="logo" width={300} style={{margin: "auto",  display: "block"}}/>
                 <Typography variant="h4" sx={{fontSize: "2rem",fontFamily: "inherit",  textAlign: "center", color: "#101840" }} mt={2}>
@@ -111,7 +111,7 @@ function LoginPage() {
                     onClick={handleSubmitForm}
                     sx={{marginTop: 2, width: "100%"}}
                 >
-                    <Typography variant="button" gutterBottom sx={{fontFamily: "inherit",fontWeight: 500 }} >
+                    <Typography variant="button" sx={{fontFamily: "inherit",fontWeight: 500 }} >
                         Login 
                     </Typography>
                 </Button>

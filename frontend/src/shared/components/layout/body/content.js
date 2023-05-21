@@ -209,9 +209,9 @@ function Content (props) {
 			</Snackbar>
             <Box  sx={{ display: 'fixed' }} >
                 { (location.pathname != "/login" && location.pathname != "/register") && (
-                    <AppBar position="fixed" sx={{ background: "none", boxShadow: "none"}}>
+                    <AppBar position="fixed" sx={{ background: "rgba(255,255,255,0.9)", boxShadow: "none"}}>
                         <Container maxWidth="xl">
-                            <Toolbar>
+                            <Toolbar sx={{paddingInline: "0px!important"}}>
                                 <Box component="div" sx={{ flexGrow: 0 }}>
                                     <img 
                                         src={require("../../../images/matik_upper_2.png")} 
@@ -220,7 +220,7 @@ function Content (props) {
                                     />
                                 </Box>
                                 
-                                <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+                                <Box sx={{ flexGrow: 1, display: 'flex' }}>
                                     {
                                         UserData && jwt_decode(UserData?.token)?.role == 1 && <>
                                         {pages.map((page) => (
@@ -234,19 +234,6 @@ function Content (props) {
                                         ))}
                                         </>
                                     }
-                                {/* {
-                                    jwt_decode(UserData.token)?.role == 1 ?
-                                        {pages.map((page) => (
-                                            <Button
-                                                key={page}
-                                                onClick={handleCloseNavMenu}
-                                                sx={{ my: 2, color: 'black',fontWeight: 600, display: 'block' }}
-                                            >
-                                                {page}
-                                            </Button>
-                                        ))}
-                                    : <></>
-                                } */}
                                 </Box>
                                 
                                 {
@@ -257,7 +244,7 @@ function Content (props) {
                                                 aria-label="account of current user"
                                                 aria-controls="menu-appbar"
                                                 aria-haspopup="true"
-                                                color="inherit"
+                                                color="#f5f5f7"
                                                 onClick={handleOpenUserMenu} 
                                             >
                                                 <AccountCircleIcon/>

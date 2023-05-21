@@ -15,8 +15,6 @@ export const homeList = () => async dispatch => {
         .then(response => {
             console.log('[HOME LIST] Retrieving data: ', response.data.body?.data[0] ? response.data.body?.data[0] : {})
             dispatch(successHomeData(response.data.body?.data))
-            dispatch(selectHome(response.data.body?.data[0] ? response.data.body?.data[0] : {}))
-            dispatch(selectRoom(response.data.body?.data[0] && "ALL")) 
         })
         .catch(error => {
             console.log('[HOME LIST] Error: ', error)

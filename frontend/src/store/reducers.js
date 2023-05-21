@@ -11,7 +11,7 @@ import adminData from '../modules/admin/store/reducer'
 const persistConfig = {
 	key: 'root',
 	storage,
-	whitelist: ['UserData'],
+	whitelist: ['UserData','homeData'],
 }
 
 const reducers = combineReducers({

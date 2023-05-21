@@ -80,7 +80,7 @@ function LoginPage() {
     return (
 		<Container maxWidth={"false"} className="Container" sx={{paddingTop: 4}}>
             <Paper
-                sx={{width: 350, height: 'auto', margin: "auto", paddingBlock: 3, paddingInline: 4}}
+                sx={{minWidth: 300, maxWidth: 400, height: 'auto', margin: "auto", paddingBlock: 3, paddingInline: 4}}
             >
                 <img onClick={()=>{navigate("/")}} src={require("../../shared/images/matik_upper_2.png")} alt="logo" width={300} style={{margin: "auto",  display: "block"}}/>
                 <Typography variant="h4" sx={{fontFamily: "inherit",  textAlign: "center", color: "#101840",  fontWeight: 500 }} mt={2}>

@@ -28,7 +28,7 @@ function RoomCard(props) {
     
     return (
     <>
-        <Grid item xs={2}>
+        <Grid item xs={6} sm={4} md={3} lg={2} xl={2}>
             <Paper sx={{
                     backgroundColor: ((props.controlType == props.name || props.controlType == "ALL") ? "white" : "#e0e0e0"),
                     height: "80px", 
