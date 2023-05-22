@@ -22,7 +22,6 @@ import {
 } from "@mui/material"
 
 import CloseIcon from '@mui/icons-material/Close';
-import {loginAPI, registerAPI} from "./service"
 import jwt_decode from "jwt-decode"
 
 import "./style.css"

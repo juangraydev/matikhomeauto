@@ -43,7 +43,6 @@ import {
 
 import MuiAlert from '@mui/material/Alert';
 
-import {loginAPI, registerAPI} from "../../../../modules/auth/service"
 import {resetUserData} from "../../../../modules/auth/store/actionCreators"
 
 import { hideMessage } from '../../../../router/store/actionCreators'
@@ -118,77 +117,6 @@ function Content (props) {
     }
     const handleRegisterClose = () => setOpenRegister(false);
 
-    const logInitState = {
-        username: "",
-        password: ""
-    }
-
-    const regInitState = {
-        housename: "",
-        name: "",
-        username: "",
-        password: "",
-        cpassword: ""
-    }
-    
-    const [formData, setFormData] = React.useState({})
-    const [formError, setFormError] = React.useState({})
-
-    const handleOnChange = (event) => setFormData({...formData, [event.target.id]: event.target.value})
-
-    const handleSubmitForm = () => {
-        setFormError({})
-        const error = validateForm(formData);
-        setFormError(error)
-        if(!Object.keys(error).length && openLogin){
-            LoginAPI(formData);
-        }else if(!Object.keys(error).length  && openRegister){
-            RegisterAPI(formData);
-        }
-    }
-    
-    const validateForm = () => {
-        let Error = {};
-        Object.keys(formData).map((data) => {
-            if(formData[data].length === 0 || formData[data] === ""){
-                Error = {...Error, [data]: "This Field is Required!"};
-            }else if(data === "cpassword"){
-                if(formData[data] != formData['password']){
-                    Error = {...Error, [data]: "Password Do Not Match!"}
-                }
-            }
-        })
-        return Error;
-    }
-
-    const LoginAPI = (data) => {
-        dispatch(loginAPI(data))
-            .then(()=>{
-                if(localStorage.getItem("TOKEN")){
-                    var decoded = jwt_decode(localStorage.getItem("TOKEN"));
-                    console.log("test decoded", decoded?.role);
-                    if(decoded?.role == 1){
-                        navigate("/admin");
-                    }else{
-                        navigate("/dashboard");
-                    }
-                }
-                setOpenLogin(false);
-            })
-    }
-    const RegisterAPI = (data) => {
-        registerAPI(data).then(()=>{
-            if(localStorage.getItem("TOKEN")){
-                var decoded = jwt_decode(localStorage.getItem("TOKEN"));
-                if(decoded?.role == 1){
-                    navigate("/admin");
-                }else{
-                    navigate("/dashboard");
-                }
-            }
-            setOpenRegister(false)
-        })
-    }
     const handleCloseNavMenu = () => {
         // setAnchorElNav(null);
       };
