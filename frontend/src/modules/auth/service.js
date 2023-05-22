@@ -1,4 +1,4 @@
-import Http from '../../shared/util/Http'
+import Http from '../../shared/util/Http.js'
 import {
     fetchUserData,
     successUserData,
