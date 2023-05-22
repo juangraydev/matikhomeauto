@@ -1,5 +1,5 @@
 import { Route, Routes } from "react-router-dom";
-import LandingPage from "../modules/auth/index";
+// import LandingPage from "../modules/auth/index";
 import LoginPage from "../modules/auth/login";
 import RegisterPage from "../modules/auth/register";
 import { UserDashboard, HomeSetting } from "../modules/user";
@@ -12,7 +12,7 @@ function Router() {
   return (
     <Content>
       <Routes>
-          <Route path="/" element={<LandingPage/>}></Route>
+          <Route path="/" element={<LoginPage/>}></Route>
           <Route path="/login" element={<LoginPage/>}></Route>
           <Route path="/register" element={<RegisterPage/>}></Route>
 
